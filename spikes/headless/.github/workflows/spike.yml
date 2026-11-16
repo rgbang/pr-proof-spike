@@ -1,0 +1,57 @@
+name: headless-spike
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  spike:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, fonts and a browser
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-noto fonts-noto-color-emoji fonts-liberation fontconfig
+          fc-cache -f
+          # Chrome is preinstalled on ubuntu-24.04 runners; show which one is found.
+          which google-chrome || which chromium || true
+          google-chrome --version || true
+
+      - name: Install edge-tts
+        run: python -m pip install edge-tts
+
+      - name: Run the test video
+        run: python core/run.py spikes/headless/testvideo
+
+      - name: Probe the video
+        run: |
+          ffprobe -v error -show_entries format=duration,size -of default=nw=1 spikes/headless/testvideo/out/test-run.mp4
+
+      - name: Make 720p MP4 and GIFs and print sizes
+        run: bash spikes/headless/measure.sh spikes/headless/testvideo/out/test-run.mp4 spikes/headless/testvideo/out/preview
+
+      - name: Upload previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: previews
+          path: spikes/headless/testvideo/out/preview/*
+
+      - name: Upload full video and report
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-run
+          path: |
+            spikes/headless/testvideo/out/test-run.mp4
+            spikes/headless/testvideo/out/report.html
+            spikes/headless/testvideo/out/results.json

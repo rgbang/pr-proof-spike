@@ -1,0 +1,14 @@
+{
+  "title": "Tiny To-do (headless spike)",
+  "subtitle": "pr-proof headless runner spike",
+  "parts": [["Add", "Tasks can be added"], ["Complete", "Tasks can be ticked off"], ["Filter", "Lists can be filtered"], ["Remove", "Tasks can be removed"]],
+  "app": {
+    "url": "http://127.0.0.1:{port}/",
+    "start": ["python", "-m", "http.server", "{port}", "--bind", "127.0.0.1"],
+    "cwd": "../app"
+  },
+  "ready": "typeof render === 'function'",
+  "viewport": [1600, 900],
+  "color_scheme": "light",
+  "quick": ["Page loads", "Add a task", "Empty task is refused"]
+}
