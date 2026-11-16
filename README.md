@@ -8,3 +8,4 @@ Temporary test repo for the pr-proof feasibility check. It checks two things:
 This repo will be deleted after the test.
 
 Test PR 1: checks the sticky GIF comment.
+Second push: the comment should update, not duplicate.
